@@ -1,4 +1,5 @@
 import pygame
+from UI import *
 
 
 def main():
@@ -16,8 +17,8 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
 
-        # переварачиваем экран
-        pygame.display.flip()
+        # обновляем экран
+        pygame.display.update()
 
     pygame.quit()
 
