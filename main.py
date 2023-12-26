@@ -8,6 +8,8 @@ def main():
     size = 500, 500
     screen = pygame.display.set_mode(size)
     pygame.display.set_caption("Название игры")
+    # работаем с UI
+    main_menu = MainMenu()
     # основной игровой цикл
     running = True
     while running:
@@ -17,6 +19,7 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
 
+        main_menu.render(screen)
         # обновляем экран
         pygame.display.update()
 

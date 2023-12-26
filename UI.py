@@ -123,3 +123,29 @@ class Text:
     def render(self, screen: pygame.Surface):
         text = self.font.render(self.text, True, self.text_color)
         screen.blit(text, (self.x, self.y))
+
+
+# окна (от Panel)
+class MainMenu(Panel):
+    def __init__(self):
+        super().__init__()
+
+        main_window_text = Text()
+        main_window_text.set_view(150, 50, 40, "Главное меню", (0, 179, 255))
+        game_btn = BaseButton()
+        game_btn.set_view(190, 210, 120, 50, (0, 179, 255), (255, 255, 255))
+        game_text = Text()
+        game_text.set_view(215, 225, 30, "Играть", (255, 255, 255))
+        settings_btn = BaseButton()
+        settings_btn.set_view(190, 300, 120, 50, (0, 179, 255), (255, 255, 255))
+        settings_text = Text()
+        settings_text.set_view(199, 315, 30, "Настройки", (255, 255, 255))
+        exit_btn = BaseButton()
+        exit_btn.set_view(190, 390, 120, 50, (0, 179, 255), (255, 255, 255))
+        exit_text = Text()
+        exit_text.set_view(215, 405, 30, "Выход", (255, 255, 255))
+
+        self.add_widget(main_window_text,
+                        game_btn, game_text,
+                        settings_btn, settings_text,
+                        exit_btn, exit_text)
