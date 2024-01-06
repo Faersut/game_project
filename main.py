@@ -1,5 +1,6 @@
 import pygame
 from UI import *
+from observers import *
 
 
 def main():
@@ -10,7 +11,10 @@ def main():
     pygame.display.set_caption("Название игры")
     # работаем с UI
     main_menu = MainMenu()
-    main_menu.exit_btn.set_click_action(lambda: print('click'))
+    main_menu.exit_btn.set_click_action(pygame.quit)
+
+    window_observer = WindowObserver()
+    window_observer.set_active_window(main_menu)
     # основной игровой цикл
     running = True
     while running:
@@ -19,8 +23,10 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                window_observer.active_window.get_click(event.pos)
 
-        main_menu.render(screen)
+        window_observer.render(screen)
         # обновляем экран
         pygame.display.update()
 

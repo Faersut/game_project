@@ -42,10 +42,11 @@ class Panel(Widget):
             widget.on_click()
 
     def get_widget(self, mouse_pos):
-        for widget in self.widgets:
+        for el in self.widgets:
+            widget = el.get_field()
             if (widget.x < mouse_pos[0] < widget.x + widget.width
                     and widget.y < mouse_pos[1] < widget.y + widget.height):
-                return widget
+                return el
         return None
 
     def add_widget(self, *widget):
@@ -68,6 +69,9 @@ class Button(Widget):
     def on_click(self):
         if self.click_action:
             self.click_action()
+
+    def get_field(self):
+        return pygame.Rect(self.x, self.y, self.width, self.height)
 
 
 class BaseButton(Button):
@@ -121,8 +125,11 @@ class Text:
 
     # отрисовываем
     def render(self, screen: pygame.Surface):
-        text = self.font.render(self.text, True, self.text_color)
-        screen.blit(text, (self.x, self.y))
+        surface = self.font.render(self.text, True, self.text_color)
+        screen.blit(surface, (self.x, self.y))
+
+    def get_field(self):
+        return self.font.render(self.text, True, self.text_color).get_rect()
 
 
 # окна (от Panel)
