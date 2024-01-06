@@ -10,6 +10,7 @@ def main():
     pygame.display.set_caption("Название игры")
     # работаем с UI
     main_menu = MainMenu()
+    main_menu.exit_btn.set_click_action(lambda: print('click'))
     # основной игровой цикл
     running = True
     while running:

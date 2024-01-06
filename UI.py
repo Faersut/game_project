@@ -130,22 +130,24 @@ class MainMenu(Panel):
     def __init__(self):
         super().__init__()
 
-        main_window_text = Text()
-        main_window_text.set_view(150, 50, 40, "Главное меню", (0, 179, 255))
-        game_btn = BaseButton()
-        game_btn.set_view(190, 210, 120, 50, (0, 179, 255), (255, 255, 255))
-        game_text = Text()
-        game_text.set_view(215, 225, 30, "Играть", (255, 255, 255))
-        settings_btn = BaseButton()
-        settings_btn.set_view(190, 300, 120, 50, (0, 179, 255), (255, 255, 255))
-        settings_text = Text()
-        settings_text.set_view(199, 315, 30, "Настройки", (255, 255, 255))
-        exit_btn = BaseButton()
-        exit_btn.set_view(190, 390, 120, 50, (0, 179, 255), (255, 255, 255))
-        exit_text = Text()
-        exit_text.set_view(215, 405, 30, "Выход", (255, 255, 255))
+        self.is_active = True
 
-        self.add_widget(main_window_text,
-                        game_btn, game_text,
-                        settings_btn, settings_text,
-                        exit_btn, exit_text)
+        self.main_window_text = Text()
+        self.main_window_text.set_view(150, 50, 40, "Главное меню", (0, 179, 255))
+        self.game_btn = BaseButton()
+        self.game_btn.set_view(160, 210, 180, 50, (0, 179, 255), (255, 255, 255))
+        self.game_text = Text()
+        self.game_text.set_view(215, 225, 30, "Играть", (255, 255, 255))
+        self.settings_btn = BaseButton()
+        self.settings_btn.set_view(160, 300, 180, 50, (0, 179, 255), (255, 255, 255))
+        self.settings_text = Text()
+        self.settings_text.set_view(199, 315, 30, "Настройки", (255, 255, 255))
+        self.exit_btn = BaseButton()
+        self.exit_btn.set_view(160, 390, 180, 50, (0, 179, 255), (255, 255, 255))
+        self.exit_text = Text()
+        self.exit_text.set_view(215, 405, 30, "Выход", (255, 255, 255))
+
+        self.add_widget(self.main_window_text,
+                        self.game_btn, self.game_text,
+                        self.settings_btn, self.settings_text,
+                        self.exit_btn, self.exit_text)
