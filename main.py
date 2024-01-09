@@ -1,11 +1,10 @@
 import pygame
 from UI import *
 from observers import *
+from game_modulse import *
 
 
 def main():
-    QUIT = pygame.USEREVENT + 1
-
     pygame.init()
 
     size = 500, 500
@@ -14,11 +13,7 @@ def main():
     # основной игровой цикл
     running = True
     # работаем с UI
-    main_menu = MainMenu()
-    main_menu.exit_btn.set_click_action(lambda: pygame.event.post(pygame.event.Event(QUIT)))
-
     window_observer = WindowObserver()
-    window_observer.set_active_window(main_menu)
     while running:
         screen.fill((0, 0, 0))
 
