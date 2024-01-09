@@ -7,13 +7,16 @@ from game_modulse import *
 def main():
     pygame.init()
 
-    size = 500, 500
+    size = 800, 600
     screen = pygame.display.set_mode(size)
     pygame.display.set_caption("Название игры")
+    # работаем с UI
+    test = CharacterTest()
+
+    window_observer = WindowObserver()
+    #window_observer.set_active_window(test)
     # основной игровой цикл
     running = True
-    # работаем с UI
-    window_observer = WindowObserver()
     while running:
         screen.fill((0, 0, 0))
 
