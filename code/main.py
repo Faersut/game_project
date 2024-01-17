@@ -1,3 +1,5 @@
+import os.path
+
 import pygame
 from UI import *
 from observers import *
@@ -23,7 +25,10 @@ def main():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 window_observer.active_window.get_click(event.pos)
             if event.type == START_GAME:
-                window_observer.set_active_window(CharacterTest())
+                if not os.path.exists("player_data.db"):
+                    window_observer.set_active_window(CharacterTest())
+                else:
+                    pass
 
         window_observer.render(screen)
         # обновляем экран
