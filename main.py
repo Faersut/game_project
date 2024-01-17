@@ -11,10 +11,7 @@ def main():
     screen = pygame.display.set_mode(size)
     pygame.display.set_caption("Название игры")
     # работаем с UI
-    test = CharacterTest()
-
     window_observer = WindowObserver()
-    #window_observer.set_active_window(test)
     # основной игровой цикл
     running = True
     while running:
@@ -25,6 +22,8 @@ def main():
                 running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 window_observer.active_window.get_click(event.pos)
+            if event.type == START_GAME:
+                window_observer.set_active_window(CharacterTest())
 
         window_observer.render(screen)
         # обновляем экран

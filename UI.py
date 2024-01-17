@@ -66,9 +66,9 @@ class Button(Widget):
     def set_click_action(self, action):
         self.click_action = action
 
-    def on_click(self, *args):
+    def on_click(self):
         if self.click_action:
-            self.click_action(*args)
+            self.click_action()
 
     def get_field(self):
         return pygame.Rect(self.x, self.y, self.width, self.height)
