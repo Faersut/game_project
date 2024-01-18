@@ -1,9 +1,9 @@
-import pygame
+import pygame.image
 
-import main
 from UI import *
 from main import *
 import sqlite3
+from game_object import *
 
 QUIT = pygame.USEREVENT + 1
 START_GAME = pygame.USEREVENT + 2
@@ -130,3 +130,32 @@ class CharacterTest(Panel):
         connect.close()
 
         return result
+
+
+class Game(Panel):
+    def __init__(self):
+        super().__init__()
+
+        self.active_room = None
+        self.player = Player()
+
+        connect = sqlite3.connect("player_data.db")
+        cursor = connect.cursor()
+
+        cursor.execute("""
+        SELECT skin FROM PlayerData""")
+        skin = cursor.fetchall()
+
+        if skin == "серый маг":
+            self.player.set_skins(pygame.image.load("data/skins/gray_mage_right.png"),
+                                  pygame.image.load("data/skins/gray_mage_left.png"))
+        elif skin == "светлый маг":
+            self.player.set_skins(pygame.image.load("data/skins/light_mage_right.png"),
+                                  pygame.image.load("data/skins/light_mage_left.png"))
+        elif skin == "черный маг":
+            self.player.set_skins(pygame.image.load("data/skins/black_mage_right.png"),
+                                  pygame.image.load("data/skins/black_mage_left.png"))
+
+    def render(self, screen):
+        self.active_room.render(screen)
+        self.player.render(screen)

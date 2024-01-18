@@ -25,3 +25,14 @@ class GameObject:
 
     def render(self, screen):
         screen.blit(self.img, (self.pos_x, self.pos_y))
+
+
+class Player(GameObject):
+    def __init__(self):
+        super().__init__()
+
+        self.skins = []
+
+    def set_skins(self, *skins):
+        self.skins = skins
+        self.img = skins[0]
