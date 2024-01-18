@@ -7,6 +7,8 @@ from game_modulse import *
 
 
 def main():
+    FPS = 30
+
     pygame.init()
 
     size = 800, 600
@@ -14,7 +16,10 @@ def main():
     pygame.display.set_caption("Название игры")
     # работаем с UI
     window_observer = WindowObserver()
+
     # основной игровой цикл
+    clock = pygame.time.Clock()
+
     running = True
     while running:
         screen.fill((0, 0, 0))
@@ -29,8 +34,12 @@ def main():
                     window_observer.set_active_window(CharacterTest())
                 else:
                     window_observer.set_active_window(Game())
+            if isinstance(window_observer.active_window, Game):
+                window_observer.active_window.update(event)
 
         window_observer.render(screen)
+
+        clock.tick(FPS)
         # обновляем экран
         pygame.display.update()
 

@@ -166,3 +166,6 @@ class Game(Panel):
     def render(self, screen):
         self.active_room.render(screen)
         self.player.render(screen)
+
+    def update(self, event):
+        self.player.update(event)

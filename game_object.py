@@ -32,6 +32,13 @@ class Player(GameObject):
         super().__init__()
 
         self.skins = []
+        self.speed = 5
+        self.hp = 100
+
+        self.press_down = False
+        self.press_up = False
+        self.press_left = False
+        self.press_right = False
 
     def set_skins(self, *skins):
         self.skins = [
@@ -41,3 +48,34 @@ class Player(GameObject):
 
     def set_base_img(self, img):
         self.img = pygame.image.load(img)
+
+    def update(self, event):
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_w:
+                self.press_up = True
+            if event.key == pygame.K_s:
+                self.press_down = True
+            if event.key == pygame.K_d:
+                self.img = self.skins[0]
+                self.press_right = True
+            if event.key == pygame.K_a:
+                self.img = self.skins[1]
+                self.press_left = True
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_w:
+                self.press_up = False
+            if event.key == pygame.K_s:
+                self.press_down = False
+            if event.key == pygame.K_d:
+                self.press_right = False
+            if event.key == pygame.K_a:
+                self.press_left = False
+
+        if self.press_down:
+            self.pos_y += self.speed
+        if self.press_up:
+            self.pos_y -= self.speed
+        if self.press_right:
+            self.pos_x += self.speed
+        if self.press_left:
+            self.pos_x -= self.speed
