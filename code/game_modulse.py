@@ -3,6 +3,7 @@ import pygame
 import main
 from UI import *
 from main import *
+import sqlite3
 
 QUIT = pygame.USEREVENT + 1
 START_GAME = pygame.USEREVENT + 2
@@ -111,5 +112,21 @@ class CharacterTest(Panel):
             result = "Вы - серый маг"
         elif total_score >= 10:
             result = "Вы - черный маг"
+
+        connect = sqlite3.connect("player_data.db")
+        cursor = connect.cursor()
+
+        connect.execute("""
+        CREATE TABLE IF NOT EXISTS PlayerData (
+        id INTEGER PRIMARY KEY,
+        hp INTEGER NOT NULL, 
+        skin TEXT NOT NULL,
+        inventory TEXT NOT NULL)""")
+        connect.execute("""
+        INSERT INTO PlayerData (hp, skin, inventory)
+        VALUES (?, ?, ?)""", (0, result[5:], ""))
+
+        connect.commit()
+        connect.close()
 
         return result
