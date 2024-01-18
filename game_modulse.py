@@ -95,7 +95,12 @@ class CharacterTest(Panel):
             res_text = self.result_test()
             res_text_wd = Text()
             res_text_wd.set_view(250, 300, 40, "Итог: " + res_text, (255, 255, 255))
-            self.add_widget(res_text_wd)
+            start_game_btn = BaseButton()
+            start_game_btn.set_view(315, 450, 160, 50, (0, 0, 0), (255, 255, 255))
+            start_game_btn.set_click_action(lambda: pygame.event.post(pygame.event.Event(START_GAME)))
+            start_game_text = Text()
+            start_game_text.set_view(325, 460, 35, "Начать игру", (255, 255, 255))
+            self.add_widget(res_text_wd, start_game_btn, start_game_text)
 
     def result_test(self):
         total_score = sum(self.response_score)
