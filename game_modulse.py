@@ -169,3 +169,4 @@ class Game(Panel):
 
     def update(self, event):
         self.player.update(event)
+        self.player.collide_detected(self.active_room.objects_rects)
