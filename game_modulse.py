@@ -1,10 +1,7 @@
-import pygame.image
-
-from UI import *
 from main import *
 import sqlite3
-from game_object import *
 from rooms import *
+import observers
 
 QUIT = pygame.USEREVENT + 1
 START_GAME = pygame.USEREVENT + 2
@@ -168,4 +165,5 @@ class Game(Panel):
         self.player.render(screen)
 
     def update(self, event):
-        self.player.update(event)
+        self.player.update(event, self.active_room.rects, self.active_room)
+        # обнаружение столкновений

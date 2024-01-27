@@ -1,3 +1,5 @@
+import pygame
+
 from game_modulse import *
 
 
