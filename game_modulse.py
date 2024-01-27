@@ -166,4 +166,14 @@ class Game(Panel):
 
     def update(self, event):
         self.player.update(event, self.active_room.rects, self.active_room)
-        # обнаружение столкновений
+
+        if event.type == GO_DANGEON:
+            self.active_room = Dangeon()
+            self.player.set_pos(400, 120)
+        if event.type == EXIT_DANGEON:
+            self.active_room = StartRoom()
+            self.player.set_pos(350, 450)
+        if event.type == FIRST_ARENA:
+            print("first arena")
+        if event.type == SECOND_ARENA:
+            print("second arena")

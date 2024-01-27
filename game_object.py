@@ -1,6 +1,11 @@
 import rooms
 import pygame
 
+GO_DANGEON = pygame.USEREVENT + 3
+EXIT_DANGEON = pygame.USEREVENT + 4
+FIRST_ARENA = pygame.USEREVENT + 5
+SECOND_ARENA = pygame.USEREVENT + 6
+
 
 class GameObject:
     def __init__(self):
@@ -90,12 +95,21 @@ class Player(GameObject):
             new_x -= self.speed
 
         for rect in rects:
-            if pygame.Rect(new_x, new_y, self.width, self.height).colliderect(rect):
+            if pygame.Rect(new_x, new_y, 75, 130).colliderect(rect):
+                if rect.width == 100 and rect.height == 100:
+                    pygame.event.post(pygame.event.Event(EXIT_DANGEON))
+                if rect.left == 100 and rect.width == 200 and rect.height == 100:
+                    pygame.event.post(pygame.event.Event(FIRST_ARENA))
+                if rect.left == 500 and rect.width == 200 and rect.height == 100:
+                    pygame.event.post(pygame.event.Event(SECOND_ARENA))
                 self.is_collide = True
 
         if isinstance(room, rooms.StartRoom):
             if new_y <= 45 or new_x <= 0 or new_x + self.width >= 800:
                 self.is_collide = True
+
+        if new_x <= 0 or new_x + self.width >= 750:
+            self.is_collide = True
 
         if self.is_collide:
             self.press_down = False
@@ -118,3 +132,6 @@ class Player(GameObject):
                 self.rect.x -= self.speed
 
         self.is_collide = False
+
+        if self.pos_y >= 600 and isinstance(room, rooms.StartRoom):
+            pygame.event.post(pygame.event.Event(GO_DANGEON))
