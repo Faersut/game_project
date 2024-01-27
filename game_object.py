@@ -104,11 +104,9 @@ class Player(GameObject):
                     pygame.event.post(pygame.event.Event(SECOND_ARENA))
                 self.is_collide = True
 
-        if isinstance(room, rooms.StartRoom):
-            if new_y <= 45 or new_x <= 0 or new_x + self.width >= 800:
-                self.is_collide = True
-
         if new_x <= 0 or new_x + self.width >= 750:
+            self.is_collide = True
+        if new_y + self.height >= 510 and isinstance(room, rooms.Dangeon):
             self.is_collide = True
 
         if self.is_collide:
