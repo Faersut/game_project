@@ -1,3 +1,5 @@
+import random
+
 import rooms
 import pygame
 
@@ -41,7 +43,7 @@ class Player(GameObject):
         super().__init__()
 
         self.skins = []
-        self.speed = 5
+        self.speed = 10
         self.hp = 100
 
         self.press_down = False
@@ -61,9 +63,9 @@ class Player(GameObject):
         self.img = pygame.image.load(img)
         self.rect = pygame.Rect(self.pos_x, self.pos_y, self.width, self.height)
 
-    def update(self, event, rects, room):
+    def update(self, event, rects, room, enemy):
         new_x, new_y = self.pos_x, self.pos_y
-
+        
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_w:
                 self.press_up = True
@@ -94,8 +96,9 @@ class Player(GameObject):
         if self.press_left:
             new_x -= self.speed
 
+        player_rect = pygame.Rect(new_x, new_y, 75, 130)
         for rect in rects:
-            if pygame.Rect(new_x, new_y, 75, 130).colliderect(rect):
+            if player_rect.colliderect(rect):
                 if rect.width == 100 and rect.height == 100:
                     pygame.event.post(pygame.event.Event(EXIT_DANGEON))
                 if rect.left == 100 and rect.width == 200 and rect.height == 100:
@@ -108,6 +111,10 @@ class Player(GameObject):
             self.is_collide = True
         if new_y + self.height >= 510 and isinstance(room, rooms.Dangeon):
             self.is_collide = True
+
+        if isinstance(room, rooms.Arena1) or isinstance(room, rooms.Arena2):
+            if pygame.Rect(new_x, new_y, 75, 130).colliderect(enemy.rect):
+                self.is_collide = True
 
         if self.is_collide:
             self.press_down = False
@@ -133,3 +140,36 @@ class Player(GameObject):
 
         if self.pos_y >= 600 and isinstance(room, rooms.StartRoom):
             pygame.event.post(pygame.event.Event(GO_DANGEON))
+
+
+class Skeleton(GameObject):
+    def __init__(self):
+        super().__init__()
+
+        skeleton_img = pygame.image.load("data/arena1/skeleton_enemy.png")
+        skeleton_img = pygame.transform.scale(skeleton_img, (120, 200))
+        self.img = skeleton_img
+        self.set_size(120, 200)
+        self.rect = pygame.Rect(self.pos_x, self.pos_y, self.width, self.height)
+        self.set_pos(350, 10)
+
+        self.speed = 10
+        self.arena_active = False
+
+        self.direction_x = 0
+        self.direction_y = 0
+
+    def update(self):
+        if self.arena_active:
+            self.direction_x = random.choice([-1, 1])
+            self.direction_y = random.choice([-1, 1])
+            self.arena_active = False
+
+        if self.rect.top <= 0 or self.rect.bottom >= 600:
+            self.direction_y *= -1
+        if self.rect.left <= 0 or self.rect.right >= 800:
+            self.direction_x *= -1
+        self.pos_x += self.direction_x * self.speed
+        self.pos_y += self.direction_y * self.speed
+        self.rect.x = self.pos_x
+        self.rect.y = self.pos_y

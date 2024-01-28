@@ -136,6 +136,7 @@ class Game(Panel):
 
         self.active_room = StartRoom()
         self.player = Player()
+        self.enemy = None
 
         connect = sqlite3.connect("player_data.db")
         cursor = connect.cursor()
@@ -158,14 +159,17 @@ class Game(Panel):
             self.player.set_base_img("data/skins/black_mage_right.png")
 
         self.player.set_size(20, 30)
+        self.player.rect.center = (self.player.rect.width // 2, self.player.rect.height // 2)
         self.player.set_pos(350, 250)
 
     def render(self, screen):
         self.active_room.render(screen)
+        if isinstance(self.active_room, Arena1) or isinstance(self.active_room, Arena2):
+            self.enemy.render(screen)
         self.player.render(screen)
 
     def update(self, event):
-        self.player.update(event, self.active_room.rects, self.active_room)
+        self.player.update(event, self.active_room.rects, self.active_room, self.enemy)
 
         if event.type == GO_DANGEON:
             self.active_room = Dangeon()
@@ -174,6 +178,12 @@ class Game(Panel):
             self.active_room = StartRoom()
             self.player.set_pos(350, 450)
         if event.type == FIRST_ARENA:
-            print("first arena")
+            self.active_room = Arena1()
+            self.enemy = Skeleton()
+            self.enemy.arena_active = True
         if event.type == SECOND_ARENA:
-            print("second arena")
+            self.active_room = Arena2()
+
+    def enemy_update(self):
+        if isinstance(self.active_room, Arena1) or isinstance(self.active_room, Arena2):
+            self.enemy.update()

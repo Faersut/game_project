@@ -86,3 +86,17 @@ class Dangeon(Room):
 
         self.add_objects(self.back_wall, self.exit,
                          self.entrace_arena_1, self.entrace_arena_2)
+
+
+class Arena1(Room):
+    def __init__(self):
+        super().__init__()
+
+        bg_img = pygame.image.load("data/arena1/arena1_backgound.png")
+        bg_img = pygame.transform.scale(bg_img, (800, 600))
+        self.set_bg_img(bg_img)
+
+
+class Arena2(Room):
+    def __init__(self):
+        super().__init__()

@@ -37,6 +37,8 @@ def main():
             if isinstance(window_observer.active_window, Game):
                 window_observer.active_window.update(event)
 
+        if isinstance(window_observer.active_window, Game):
+            window_observer.active_window.enemy_update()
         window_observer.render(screen)
 
         clock.tick(FPS)
