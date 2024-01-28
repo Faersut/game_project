@@ -130,3 +130,34 @@ class Text:
 
     def get_field(self):
         return self.font.render(self.text, True, self.text_color).get_rect()
+
+
+class HealthBar:
+    def __init__(self):
+        self.x = 0
+        self.y = 0
+        self.width = 0
+        self.height = 0
+        self.health_color = (0, 0, 0)
+        self.background_color = (0, 0, 0)
+        self.start_hp = 0
+        self.now_hp = 0
+
+    def set_view(self, x, y, width, height):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+
+    def set_color(self, health_color, background_color):
+        self.health_color = health_color
+        self.background_color = background_color
+
+    def render(self, screen):
+        hp_rect = pygame.Rect(self.x, self.y, self.width * (self.now_hp / self.start_hp), self.height)
+        background_rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        pygame.draw.rect(screen, self.background_color, background_rect)
+        pygame.draw.rect(screen, self.health_color, hp_rect)
+
+    def get_field(self):
+        return pygame.Rect(self.x, self.y, self.width, self.height)

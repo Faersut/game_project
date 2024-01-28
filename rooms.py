@@ -100,3 +100,7 @@ class Arena1(Room):
 class Arena2(Room):
     def __init__(self):
         super().__init__()
+
+        bg_img = pygame.image.load("data/arena2/arena2_background.png")
+        bg_img = pygame.transform.scale(bg_img, (800, 600))
+        self.set_bg_img(bg_img)

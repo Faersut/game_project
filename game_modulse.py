@@ -1,10 +1,17 @@
-from main import *
+import pygame.event
+
+import game
+from game import *
 import sqlite3
 from rooms import *
 import observers
 
 QUIT = pygame.USEREVENT + 1
 START_GAME = pygame.USEREVENT + 2
+GAME_OVER = pygame.USEREVENT + 7
+WIN_FIRST_ENEMY = pygame.USEREVENT + 8
+WIN_SECOND_ENEMY = pygame.USEREVENT + 9
+MENU = pygame.USEREVENT + 10
 
 
 class MainMenuModule(Panel):
@@ -14,23 +21,18 @@ class MainMenuModule(Panel):
         self.main_window_text = Text()
         self.main_window_text.set_view(150, 50, 40, "Главное меню", (0, 179, 255))
         self.game_btn = BaseButton()
-        self.game_btn.set_view(160, 210, 180, 50, (0, 179, 255), (255, 255, 255))
+        self.game_btn.set_view(160, 260, 180, 50, (0, 179, 255), (255, 255, 255))
         self.game_btn.set_click_action(lambda: pygame.event.post(pygame.event.Event(START_GAME)))
         self.game_text = Text()
-        self.game_text.set_view(215, 225, 30, "Играть", (255, 255, 255))
-        self.settings_btn = BaseButton()
-        self.settings_btn.set_view(160, 300, 180, 50, (0, 179, 255), (255, 255, 255))
-        self.settings_text = Text()
-        self.settings_text.set_view(199, 315, 30, "Настройки", (255, 255, 255))
+        self.game_text.set_view(215, 275, 30, "Играть", (255, 255, 255))
         self.exit_btn = BaseButton()
-        self.exit_btn.set_view(160, 390, 180, 50, (0, 179, 255), (255, 255, 255))
+        self.exit_btn.set_view(160, 340, 180, 50, (0, 179, 255), (255, 255, 255))
         self.exit_btn.set_click_action(lambda: pygame.event.post(pygame.event.Event(QUIT)))
         self.exit_text = Text()
-        self.exit_text.set_view(215, 405, 30, "Выход", (255, 255, 255))
+        self.exit_text.set_view(215, 355, 30, "Выход", (255, 255, 255))
 
         self.add_widget(self.main_window_text,
                         self.game_btn, self.game_text,
-                        self.settings_btn, self.settings_text,
                         self.exit_btn, self.exit_text)
 
 
@@ -71,6 +73,8 @@ class CharacterTest(Panel):
             self.add_widget(btn_option, btn_option_text)
 
         self.add_widget(self.question_text)
+
+        pygame.mixer.music.stop()
 
     def option_action(self):
         self.widgets = []
@@ -116,13 +120,12 @@ class CharacterTest(Panel):
 
         connect.execute("""
         CREATE TABLE IF NOT EXISTS PlayerData (
-        id INTEGER PRIMARY KEY,
-        hp INTEGER NOT NULL, 
+        id INTEGER PRIMARY KEY, 
         skin TEXT NOT NULL,
-        inventory TEXT NOT NULL)""")
+        completed_level TEXT NOT NULL)""")
         connect.execute("""
-        INSERT INTO PlayerData (hp, skin, inventory)
-        VALUES (?, ?, ?)""", (0, result[5:], ""))
+        INSERT INTO PlayerData (skin, completed_level)
+        VALUES (?, ?)""", (result[5:], ""))
 
         connect.commit()
         connect.close()
@@ -162,13 +165,32 @@ class Game(Panel):
         self.player.rect.center = (self.player.rect.width // 2, self.player.rect.height // 2)
         self.player.set_pos(350, 250)
 
+        self.player_health_bar = HealthBar()
+        self.player_health_bar.set_view(80, 80, 200, 50)
+        self.player_health_bar.set_color((0, 255, 0), (0, 0, 0))
+        self.player_health_bar.start_hp = self.player.hp
+        self.player_health_bar.now_hp = self.player.hp
+
+        self.enemy_health_bar = HealthBar()
+        self.enemy_health_bar.set_view(480, 80, 200, 50)
+        self.enemy_health_bar.set_color((0, 255, 0), (0, 0, 0))
+
+        self.add_widget(self.player_health_bar, self.enemy_health_bar)
+
     def render(self, screen):
         self.active_room.render(screen)
         if isinstance(self.active_room, Arena1) or isinstance(self.active_room, Arena2):
+            for widget in self.widgets:
+                widget.render(screen)
             self.enemy.render(screen)
         self.player.render(screen)
 
     def update(self, event):
+        if isinstance(self.active_room, Arena1) or isinstance(self.active_room, Arena2):
+            if self.widgets:
+                self.player_health_bar.now_hp = self.player.hp
+                self.enemy_health_bar.now_hp = self.enemy.hp
+
         self.player.update(event, self.active_room.rects, self.active_room, self.enemy)
 
         if event.type == GO_DANGEON:
@@ -177,13 +199,117 @@ class Game(Panel):
         if event.type == EXIT_DANGEON:
             self.active_room = StartRoom()
             self.player.set_pos(350, 450)
-        if event.type == FIRST_ARENA:
+        if event.type == FIRST_ARENA and game.completed_level[0] == "":
             self.active_room = Arena1()
             self.enemy = Skeleton()
+            self.enemy_health_bar.start_hp = self.enemy.hp
+            self.enemy_health_bar.now_hp = self.enemy.hp
             self.enemy.arena_active = True
-        if event.type == SECOND_ARENA:
+            pygame.mixer.music.load("data/music/first_arena_music.mp3")
+            pygame.mixer.music.play(-1)
+            pygame.mixer.music.set_volume(0.1)
+        if event.type == SECOND_ARENA and game.completed_level[0] != "2":
             self.active_room = Arena2()
+            self.enemy = Witch()
+            self.enemy_health_bar.start_hp = self.enemy.hp
+            self.enemy_health_bar.now_hp = self.enemy.hp
+            self.enemy.arena_active = True
+            pygame.mixer.music.load("data/music/second_arena_music.mp3")
+            pygame.mixer.music.play(-1)
+            pygame.mixer.music.set_volume(0.1)
+
+        if self.player.hp <= 0:
+            pygame.event.post(pygame.event.Event(GAME_OVER))
 
     def enemy_update(self):
         if isinstance(self.active_room, Arena1) or isinstance(self.active_room, Arena2):
-            self.enemy.update()
+            self.enemy.update(self.player)
+            if self.enemy.hp <= 0 and isinstance(self.active_room, Arena1):
+                pygame.event.post(pygame.event.Event(WIN_FIRST_ENEMY))
+            if self.enemy.hp <= 0 and isinstance(self.active_room, Arena2):
+                pygame.event.post(pygame.event.Event(WIN_SECOND_ENEMY))
+
+
+class GameOver(Panel):
+    def __init__(self):
+        super().__init__()
+
+        self.game_over_text = Text()
+        self.game_over_text.set_view(280, 100, 40, "Вы проиграли!", (255, 0, 0))
+
+        self.new_game_btn = BaseButton()
+        self.new_game_btn.set_view(310, 300, 150, 80, (0, 0, 0), (255, 255, 255))
+        self.new_game_btn.set_click_action(lambda: pygame.event.post(pygame.event.Event(START_GAME)))
+
+        self.new_game_text = Text()
+        self.new_game_text.set_view(330, 325, 30, "Новая игра", (255, 255, 255))
+
+        self.add_widget(self.game_over_text, self.new_game_btn, self.new_game_text)
+
+        pygame.mixer.music.stop()
+
+
+class WinFirstEnemy(Panel):
+    def __init__(self):
+        super().__init__()
+
+        self.game_over_text = Text()
+        self.game_over_text.set_view(220, 100, 40, "Так держать! Дальше больше!", (0, 255, 0))
+
+        self.new_game_btn = BaseButton()
+        self.new_game_btn.set_view(270, 300, 240, 80, (0, 0, 0), (255, 255, 255))
+        self.new_game_btn.set_click_action(self.save_progress)
+
+        self.new_game_text = Text()
+        self.new_game_text.set_view(295, 325, 30, "Продолжить играть", (255, 255, 255))
+
+        self.add_widget(self.game_over_text, self.new_game_btn, self.new_game_text)
+
+        pygame.mixer.music.stop()
+
+    def save_progress(self):
+        connect = sqlite3.connect("player_data.db")
+        cursor = connect.cursor()
+
+        cursor.execute("""
+                UPDATE PlayerData SET completed_level = ? WHERE id = ?""", ("1", 1))
+
+        connect.commit()
+        connect.close()
+
+        game.completed_level = "1"
+
+        pygame.event.post(pygame.event.Event(START_GAME))
+
+
+class WinSecondEnemy(Panel):
+    def __init__(self):
+        super().__init__()
+
+        self.game_over_text = Text()
+        self.game_over_text.set_view(200, 100, 40, "Ура, теперь твой питомец свободен!", (0, 255, 0))
+
+        self.new_game_btn = BaseButton()
+        self.new_game_btn.set_view(270, 300, 240, 80, (0, 0, 0), (255, 255, 255))
+        self.new_game_btn.set_click_action(self.save_progress)
+
+        self.new_game_text = Text()
+        self.new_game_text.set_view(350, 325, 30, "Меню", (255, 255, 255))
+
+        self.add_widget(self.game_over_text, self.new_game_btn, self.new_game_text)
+
+        pygame.mixer.music.stop()
+
+    def save_progress(self):
+        connect = sqlite3.connect("player_data.db")
+        cursor = connect.cursor()
+
+        cursor.execute("""
+                UPDATE PlayerData SET completed_level = ? WHERE id = ?""", ("2", 1))
+
+        connect.commit()
+        connect.close()
+
+        game.completed_level = "2"
+
+        pygame.event.post(pygame.event.Event(MENU))
